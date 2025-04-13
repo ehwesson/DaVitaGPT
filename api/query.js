@@ -1,37 +1,35 @@
 import { runIntegrationTestForQuery } from '../lib/apiIntegration.mjs';
 
-console.log("ENV check:", {
-  OPENAI: process.env.OPENAI_API_KEY ? "✅" : "❌",
-  CONF_EMAIL: process.env.CONFLUENCE_EMAIL ? "✅" : "❌",
-  CONF_TOKEN: process.env.CONFLUENCE_API_TOKEN ? "✅" : "❌",
-});
-
 export default async function handler(req, res) {
+  console.log('[API] /api/query endpoint hit');
+  console.log(`[API] Method: ${req.method}`);
+
+  if (req.method !== 'POST') {
+    console.warn('[API] Invalid request method');
+    return res.status(405).json({ error: 'Only POST requests allowed' });
+  }
+
   try {
-    console.log('[API] /api/query hit');
-    console.log(`[API] Method: ${req.method}`);
+    const { question } = req.body; // <-- this must come before usage
+    console.log(`[API] Received question: ${question}`);
 
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Only POST requests allowed' });
-    }
-
-    const { question } = req.body;
     if (!question) {
+      console.warn('[API] No question provided in request body');
       return res.status(400).json({ error: "Missing 'question'" });
     }
 
     const result = await runIntegrationTestForQuery(question);
-    console.log('[API] Result:', result);
 
     if (result.error) {
+      console.warn('[API] Integration test returned error:', result.error);
       return res.status(200).json({ answer: result.error });
     }
 
+    console.log('[API] Returning successful result');
     res.status(200).json(result);
+
   } catch (error) {
-    console.error('[API] Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('[API] Error processing query:', error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
