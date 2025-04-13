@@ -12,9 +12,7 @@ export async function runQuery(question) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Server returned error:", error);
-      return { answer: error.error || 'Unknown error' };
+      throw new Error("Failed to reach backend.");
     }
 
     const data = await response.json();

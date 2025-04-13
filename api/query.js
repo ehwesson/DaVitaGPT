@@ -1,5 +1,4 @@
-// api/query.js
-import { runIntegrationTestForQuery } from '../API/apiIntegration.mjs';
+import { runIntegrationTestForQuery } from './apiIntegration.mjs';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -25,3 +24,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
