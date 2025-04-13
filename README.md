@@ -1,34 +1,20 @@
-This version of DannyDavita (DaVitaGPT) is built to run locally (on localhost) as a proof of concept. It connects to Confluence to retrieve tagged documents and uses OpenAI to answer user questions based on that content.
+DaVitaGPT is a hosted proof-of-concept AI assistant that integrates Confluence and OpenAI to help DaVita team members find relevant documentation with ease. It scans tagged Confluence pages, extracts content, and uses OpenAI to answer user questions based on that content—all within a familiar, conversational interface.
 
+This version is now deployed on Vercel: https://da-vita-gpt.vercel.app
 
-It is expected to have an .env file with an OpenAI API Key, Confluence email, and Confluence API Key. 
-.gitignore is expected to include .env 
-This version currently requires the following packages:
--npm install
--npm install express
--npm install dotenv node-fetch
--npm install -g http-server
+The following secrets are required and should be added to your Vercel project settings:
+OPENAI_API_KEY=your-openai-api-key
+CONFLUENCE_EMAIL=your-email@example.com
+CONFLUENCE_API_TOKEN=your-confluence-api-token
 
-to get started: 
--update tag list in openaiclient.mjs
--cd build
--node server.mjs
--open your browser and enter http://localhost:3000
+Do not include .env in your repository. It is expected to be defined as environment variables in the hosting platform (e.g., Vercel).
 
-Current Features:
--Conversational Front end with persisent chat history 
--Connects to confluence and uses tags/labels to indentify relevant documents
--Uses OpenAI to generate (context-aware) answers
--User-friendly Interface similar to ChatGpt
--Local Storage of messages (until cleared)
+Development Notes: 
+Update availableTags in clients/openaiclient.mjs to reflect your Confluence labels.
+Ensure your Confluence pages are tagged with labels that the system expects.
+Make sure your Confluence credentials have full access to the workspace documents.
 
-Notes:
--This current version (local hosted) is for demonstration only
--You MUST have access to a confluence space with labeled pages that match expected tags AND access to OpenAI
--You MUST have no restrictions on your confluence account to access all documents within your workspace. 
-
-Future Work:
--This product will be hosted on Vercel 
--Config file addition for tags 
-
--change later
+known issues:
+Hosted backend may return 500 errors if required environment variables are missing or misconfigured.
+Tags not matching Confluence labels will yield no context for OpenAI.
+Long documents may impact performance or response clarity.
