@@ -2,8 +2,6 @@
 // fetches documents, urls, and other metadata
 
 import fetch from 'node-fetch';
-import { Buffer } from 'node:buffer';
-
 
 const CONFLUENCE_BASE_URL = 'https://miscapstones25.atlassian.net/wiki/rest/api';
 
@@ -21,15 +19,13 @@ function getAuthHeader() {
 
 /**
  * Fetches Confluence documents that match labels.
- * @param {string[]} tags - List of label strings.
- * @returns {Promise<{ combinedContent: string, sources: { title: string, url: string }[] } | null>}
  */
 export async function fetchConfluenceDocsWithMeta(tags) {
-  console.log("fetchConfluenceDocsWithMeta triggered with tags:", tags);
-  console.log("Auth Header:", authHeader);
-
   const authHeader = getAuthHeader();
-  if (!authHeader){ return null; } 
+  if (!authHeader) {
+    console.error("Authorization header is missing.");
+    return null;
+  }
 
   const cqlQuery = tags.map(tag => `label = "${tag}"`).join(' OR ');
   const encodedCql = encodeURIComponent(`(${cqlQuery}) ORDER BY lastModified DESC`);
@@ -67,17 +63,10 @@ export async function fetchConfluenceDocsWithMeta(tags) {
       const body = doc.body?.view?.value || '';
       const webUrl = `https://miscapstones25.atlassian.net/wiki${doc._links.webui}`;
 
-      console.log(`📄 Document: "${title}" (${body.length} chars)`);
-
       if (body.length > 0) {
         docContents.push(`${title}:\n${stripHtml(body)}`);
         sources.push({ title, url: webUrl });
       }
-    }
-
-    if (docContents.length === 0) {
-      console.log("All documents returned were empty.");
-      return null;
     }
 
     return {
@@ -91,11 +80,6 @@ export async function fetchConfluenceDocsWithMeta(tags) {
   }
 }
 
-/**
- * Removes HTML tags from Confluence body content.
- * @param {string} html
- * @returns {string}
- */
 function stripHtml(html) {
   return html.replace(/<[^>]+>/g, '');
 }
