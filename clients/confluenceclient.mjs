@@ -1,12 +1,10 @@
 // this file manages our interactions with Confluence REST API
 // fetches documents, urls, and other metadata
-// import dotenv from 'dotenv';
-import fetch from 'node-fetch';
 
-// confluenceclient.mjs
 import fetch from 'node-fetch';
+import { Buffer } from 'node:buffer';
 
-// ✅ No dotenv - environment variables are injected by Vercel
+
 const CONFLUENCE_BASE_URL = 'https://miscapstones25.atlassian.net/wiki/rest/api';
 
 function getAuthHeader() {
@@ -27,8 +25,11 @@ function getAuthHeader() {
  * @returns {Promise<{ combinedContent: string, sources: { title: string, url: string }[] } | null>}
  */
 export async function fetchConfluenceDocsWithMeta(tags) {
+  console.log("fetchConfluenceDocsWithMeta triggered with tags:", tags);
+  console.log("Auth Header:", authHeader);
+
   const authHeader = getAuthHeader();
-  if (!authHeader) return null;
+  if (!authHeader){ return null; } 
 
   const cqlQuery = tags.map(tag => `label = "${tag}"`).join(' OR ');
   const encodedCql = encodeURIComponent(`(${cqlQuery}) ORDER BY lastModified DESC`);
@@ -54,7 +55,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
     const data = await response.json();
 
     if (!data.results || data.results.length === 0) {
-      console.log("⚠️ No documents found for these tags.");
+      console.log("No documents found for these tags.");
       return null;
     }
 
@@ -75,7 +76,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
     }
 
     if (docContents.length === 0) {
-      console.log("⚠️ All documents returned were empty.");
+      console.log("All documents returned were empty.");
       return null;
     }
 
