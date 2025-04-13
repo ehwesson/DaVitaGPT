@@ -1,5 +1,5 @@
-// api/query.mjs
-import { runIntegrationTestForQuery } from './apiIntegration.mjs';
+// api/query.js
+import { runIntegrationTestForQuery } from '../API/apiIntegration.mjs';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,25 +7,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { question } = await req.json(); // For edge-compatible streaming
+    const { question } = req.body;
+
     if (!question) {
-      return new Response(JSON.stringify({ error: "Missing 'question'" }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return res.status(400).json({ error: "Missing 'question'" });
     }
 
     const result = await runIntegrationTestForQuery(question);
 
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (err) {
-    console.error('API error:', err);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    if (result.error) {
+      return res.status(200).json({ answer: result.error });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error processing query:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
