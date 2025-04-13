@@ -22,4 +22,3 @@ export async function runQuery(question) {
     return { answer: 'Failed to reach backend.' };
   }
 }
-

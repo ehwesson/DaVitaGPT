@@ -1,7 +1,7 @@
 // apiIntegration.mjs - handles the integration logic between confluence and openai
 // processes user queries
-import { fetchConfluenceDocsWithMeta } from '../build/clients/confluenceclient.mjs';
-import { determineRelevantTags, fetchOpenAIResponse } from '../build/clients/openaiclient.mjs';
+import { fetchConfluenceDocsWithMeta } from '../clients/confluenceclient.mjs';
+import { determineRelevantTags, fetchOpenAIResponse } from '../clients/openaiclient.mjs';
 
 
 export async function runIntegrationTestForQuery(question) {
