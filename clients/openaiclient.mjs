@@ -11,7 +11,7 @@ console.log("🔑 Using OpenAI key:", OPENAI_API_KEY ? "Loaded" : "Missing");
 const availableTags = [
   "capstone", "code", "code-demonstration", "code-overview", "compliance", "confluencechatgpt", "data-cleansing",
   "general-medical", "hosting", "kidney-disease", "kidney-dialysis", "localhost", "manual", "medical", "meeting_minutes",
-  "openai", "phi", "pii", "programming", "recommendations", "scheduling", "tagging", "test", "testing", "training", "vercel", "vector"
+  "openai", "phi", "pii", "programming", "recommendations", "scheduling", "tagging", "test", "testing", "training", "vercel", "vector", "business", "business-value"
 ];
 
 
