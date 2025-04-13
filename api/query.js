@@ -1,5 +1,10 @@
-// api/query.js
 import { runIntegrationTestForQuery } from '../lib/apiIntegration.mjs';
+
+console.log("ENV check:", {
+  OPENAI: process.env.OPENAI_API_KEY ? "✅" : "❌",
+  CONF_EMAIL: process.env.CONFLUENCE_EMAIL ? "✅" : "❌",
+  CONF_TOKEN: process.env.CONFLUENCE_API_TOKEN ? "✅" : "❌",
+});
 
 export default async function handler(req, res) {
   console.log('[API] /api/query endpoint hit');
@@ -34,4 +39,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
