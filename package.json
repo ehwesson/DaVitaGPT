@@ -1,8 +1,13 @@
 {
+  "name": "davitagpt",
+  "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "dev": "echo 'Use Vercel CLI or dashboard to run locally.'",
+    "start": "echo 'Handled by Vercel runtime via api directory.'"
+  },
   "dependencies": {
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
     "node-fetch": "^3.3.2"
   }
 }
