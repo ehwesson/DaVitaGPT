@@ -1,5 +1,5 @@
 // api/query.js
-import { runIntegrationTestForQuery } from './apiIntegration.mjs';
+import { runIntegrationTestForQuery } from '../lib/apiIntegration.mjs';
 
 export default async function handler(req, res) {
   console.log('[API] /api/query endpoint hit');
