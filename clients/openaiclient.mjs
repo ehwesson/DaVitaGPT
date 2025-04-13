@@ -2,16 +2,16 @@
 // sends prompts and generates responses. 
 //_______________________
 
-// openaiclient.mjs
 import fetch from 'node-fetch';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 console.log("🔑 Using OpenAI key:", OPENAI_API_KEY ? "Loaded" : "Missing");
 
-// Approved tags (could be moved to external storage later)
+//  tags (could be moved to external storage later)
 const availableTags = [
-  "training", "compliance", "general-medical", "kidney-disease", 
-  "kidney-dialysis", "medical-manual", "meeting_minutes", "scheduling"
+  "compliance", "confluencechatgpt", "capstone", "data-cleansing", "general-medical", "kidney-disease", "kidney-dialysis", "meeting_minutes",
+  "manual", "medical", "openai", "pii", "phi", "programming", "recommendations", "random", "scheduling", "tagging", "testing", "test",
+  "training", "vector"
 ];
 
 // Utility delay
