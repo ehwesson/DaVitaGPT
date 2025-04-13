@@ -1,5 +1,5 @@
-// responsible for sending a request from frontend to backend point
 // clients/frontendAPI.js
+// Handles sending a request from frontend to the backend API route
 
 export async function runQuery(question) {
   try {
@@ -12,13 +12,15 @@ export async function runQuery(question) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to reach backend.");
+      const errorMessage = await response.text();
+      console.error('Backend returned an error:', errorMessage);
+      return { answer: 'Error from server.' };
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Fetch failed:', error);
+    console.error('Failed to reach backend:', error);
     return { answer: 'Failed to reach backend.' };
   }
 }
