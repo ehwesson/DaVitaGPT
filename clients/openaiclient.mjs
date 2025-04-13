@@ -2,26 +2,34 @@
 // sends prompts and generates responses. 
 //_______________________
 
-import dotenv from 'dotenv';
-dotenv.config();
+// openaiclient.mjs
+import fetch from 'node-fetch';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-console.log("Using OpenAI key:", OPENAI_API_KEY ? "Loaded" : "Missing");
+console.log("🔑 Using OpenAI key:", OPENAI_API_KEY ? "Loaded" : "Missing");
 
-// approved tags (move to a config file or database later)
-// https://miscapstones25.atlassian.net/wiki/labels/listlabels-alphaview.action
+// Approved tags (could be moved to external storage later)
 const availableTags = [
   "training", "compliance", "general-medical", "kidney-disease", 
   "kidney-dialysis", "medical-manual", "meeting_minutes", "scheduling"
 ];
 
-//delay function - helps with fetch timeouts
+// Utility delay
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// get *relevant* tags from OpenAI based on question
+/**
+ * Identifies relevant Confluence tags for the question using OpenAI
+ * @param {string} question
+ * @returns {Promise<string[]>}
+ */
 export async function determineRelevantTags(question) {
+  if (!OPENAI_API_KEY) {
+    console.error("OPENAI_API_KEY is missing.");
+    return [];
+  }
+
   const payload = {
     model: 'gpt-4o',
     messages: [
@@ -52,18 +60,29 @@ export async function determineRelevantTags(question) {
     }
 
     const data = await response.json();
-    const extractedTags = data.choices[0].message.content.split(",").map(tag => tag.trim());
+    const extractedTags = data.choices[0]?.message?.content.split(",").map(tag => tag.trim()) || [];
     const validTags = extractedTags.filter(tag => availableTags.includes(tag));
-    console.log("Relevant tags identified:", validTags);
+    
+    console.log("🏷️ Relevant tags identified:", validTags);
     return validTags;
   } catch (error) {
-    console.error("Error in determineRelevantTags:", error);
+    console.error("🚨 Error in determineRelevantTags:", error);
     return [];
   }
 }
 
-//Use documents + question to generate final response
+/**
+ * Sends question and documents to OpenAI for final answer
+ * @param {string} question
+ * @param {string} context
+ * @returns {Promise<string>}
+ */
 export async function fetchOpenAIResponse(question, context) {
+  if (!OPENAI_API_KEY) {
+    console.error("OPENAI_API_KEY is missing.");
+    return "Missing OpenAI credentials.";
+  }
+
   if (!context) {
     console.log("No context provided. Skipping OpenAI response.");
     return "No relevant documents found.";
@@ -101,14 +120,21 @@ export async function fetchOpenAIResponse(question, context) {
     }
 
     const data = await response.json();
-    return data.choices[0]?.message?.content || "I couldn't generate a response.";
+    const answer = data.choices[0]?.message?.content || "I couldn't generate a response.";
+    console.log("OpenAI answered:", answer);
+    return answer;
   } catch (error) {
     console.error("Error in fetchOpenAIResponse:", error);
     return "There was an issue retrieving a response.";
   }
 }
 
-//Full process from question to response
+/**
+ * !Optional! wrapper that adds delay before calling OpenAI
+ * @param {string} question 
+ * @param {string} context 
+ * @returns {Promise<string>}
+ */
 export async function generateResponse(question, context) {
   console.log("Waiting 5 seconds before calling OpenAI...");
   await wait(5000);
@@ -121,4 +147,3 @@ export async function generateResponse(question, context) {
     return "There was a problem generating the answer.";
   }
 }
-

@@ -1,27 +1,37 @@
 // this file manages our interactions with Confluence REST API
 // fetches documents, urls, and other metadata
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
-dotenv.config();
+// confluenceclient.mjs
+import fetch from 'node-fetch';
 
+// ✅ No dotenv - environment variables are injected by Vercel
 const CONFLUENCE_BASE_URL = 'https://miscapstones25.atlassian.net/wiki/rest/api';
-const AUTH_HEADER = `Basic ${Buffer.from(`${process.env.CONFLUENCE_EMAIL}:${process.env.CONFLUENCE_API_TOKEN}`).toString('base64')}`;
 
-/**
- * retrieves Confluence documents that match labels.
- * @param {string[]} tags - list of label strings.
- * @returns {Promise<{ combinedContent: string, sources: string[] } | null>}
- */
-export async function fetchConfluenceDocsWithMeta(tags) {
-  if (!process.env.CONFLUENCE_EMAIL || !process.env.CONFLUENCE_API_TOKEN) {
-    console.error("Missing Confluence credentials.");
+function getAuthHeader() {
+  const email = process.env.CONFLUENCE_EMAIL;
+  const token = process.env.CONFLUENCE_API_TOKEN;
+
+  if (!email || !token) {
+    console.error("Missing CONFLUENCE_EMAIL or CONFLUENCE_API_TOKEN");
     return null;
   }
 
+  return `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
+}
+
+/**
+ * Fetches Confluence documents that match labels.
+ * @param {string[]} tags - List of label strings.
+ * @returns {Promise<{ combinedContent: string, sources: { title: string, url: string }[] } | null>}
+ */
+export async function fetchConfluenceDocsWithMeta(tags) {
+  const authHeader = getAuthHeader();
+  if (!authHeader) return null;
+
   const cqlQuery = tags.map(tag => `label = "${tag}"`).join(' OR ');
   const encodedCql = encodeURIComponent(`(${cqlQuery}) ORDER BY lastModified DESC`);
-  // limit of documents given back to the AI
   const url = `${CONFLUENCE_BASE_URL}/content/search?limit=5&cql=${encodedCql}&expand=space,body.view`;
 
   console.log("📡 Fetching Confluence docs from:", url);
@@ -31,7 +41,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'Authorization': AUTH_HEADER
+        'Authorization': authHeader
       }
     });
 
@@ -44,7 +54,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
     const data = await response.json();
 
     if (!data.results || data.results.length === 0) {
-      console.log("No documents found for these tags.");
+      console.log("⚠️ No documents found for these tags.");
       return null;
     }
 
@@ -56,7 +66,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
       const body = doc.body?.view?.value || '';
       const webUrl = `https://miscapstones25.atlassian.net/wiki${doc._links.webui}`;
 
-      console.log(`Document: "${title}" (${body.length} chars)`);
+      console.log(`📄 Document: "${title}" (${body.length} chars)`);
 
       if (body.length > 0) {
         docContents.push(`${title}:\n${stripHtml(body)}`);
@@ -65,7 +75,7 @@ export async function fetchConfluenceDocsWithMeta(tags) {
     }
 
     if (docContents.length === 0) {
-      console.log("All documents returned were empty.");
+      console.log("⚠️ All documents returned were empty.");
       return null;
     }
 
