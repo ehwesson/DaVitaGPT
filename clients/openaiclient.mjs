@@ -9,10 +9,11 @@ console.log("🔑 Using OpenAI key:", OPENAI_API_KEY ? "Loaded" : "Missing");
 
 //  tags (could be moved to external storage later)
 const availableTags = [
-  "compliance", "confluencechatgpt", "capstone", "data-cleansing", "general-medical", "kidney-disease", "kidney-dialysis", "meeting_minutes",
-  "manual", "medical", "openai", "pii", "phi", "programming", "recommendations", "random", "scheduling", "tagging", "testing", "test",
-  "training", "vector"
+  "capstone", "code", "code-demonstration", "code-overview", "compliance", "confluencechatgpt", "data-cleansing",
+  "general-medical", "hosting", "kidney-disease", "kidney-dialysis", "localhost", "manual", "medical", "meeting_minutes",
+  "openai", "phi", "pii", "programming", "recommendations", "scheduling", "tagging", "test", "testing", "training", "vercel", "vector"
 ];
+
 
 // Utility delay
 function wait(ms) {
