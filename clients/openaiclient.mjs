@@ -64,10 +64,10 @@ export async function determineRelevantTags(question) {
     const extractedTags = data.choices[0]?.message?.content.split(",").map(tag => tag.trim()) || [];
     const validTags = extractedTags.filter(tag => availableTags.includes(tag));
     
-    console.log("🏷️ Relevant tags identified:", validTags);
+    console.log("Relevant tags identified:", validTags);
     return validTags;
   } catch (error) {
-    console.error("🚨 Error in determineRelevantTags:", error);
+    console.error("Error in determineRelevantTags:", error);
     return [];
   }
 }

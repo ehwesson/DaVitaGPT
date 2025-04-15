@@ -29,9 +29,10 @@ export async function fetchConfluenceDocsWithMeta(tags) {
 
   const cqlQuery = tags.map(tag => `label = "${tag}"`).join(' OR ');
   const encodedCql = encodeURIComponent(`(${cqlQuery}) ORDER BY lastModified DESC`);
+  //limits the amount of docs gathered and fed to AI
   const url = `${CONFLUENCE_BASE_URL}/content/search?limit=5&cql=${encodedCql}&expand=space,body.view`;
 
-  console.log("📡 Fetching Confluence docs from:", url);
+  console.log("Fetching Confluence docs from:", url);
 
   try {
     const response = await fetch(url, {
